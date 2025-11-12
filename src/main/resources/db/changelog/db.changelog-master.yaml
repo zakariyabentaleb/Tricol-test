@@ -1,0 +1,270 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: zak
+      changes:
+        - createTable:
+            tableName: fournisseur
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: societe
+                  type: VARCHAR(100)
+              - column:
+                  name: adresse
+                  type: VARCHAR(255)
+              - column:
+                  name: contact
+                  type: VARCHAR(100)
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+              - column:
+                  name: telephone
+                  type: VARCHAR(20)
+              - column:
+                  name: ville
+                  type: VARCHAR(50)
+              - column:
+                  name: ice
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 2
+      author: zak
+      changes:
+        - createTable:
+            tableName: commandes
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: dateCommande
+                  type: TIMESTAMP
+              - column:
+                  name: statut
+                  type: VARCHAR(50)
+              - column:
+                  name: montantTotal
+                  type: DOUBLE PRECISION
+              - column:
+                  name: id_fournisseur
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: commandes
+            baseColumnNames: id_fournisseur
+            referencedTableName: fournisseur
+            referencedColumnNames: id
+            constraintName: fk_commandes_fournisseur
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 3
+      author: zak
+      validCheckSum: 'ANY'
+      changes:
+        - createTable:
+            tableName: produit
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: prix_unitaire
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: categorie
+                  type: VARCHAR(255)
+              - column:
+                  name: stock_actuel
+                  type: INT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 4
+      author: zak
+      validCheckSum: 'ANY'
+      changes:
+        - addColumn:
+            tableName: produit
+            columns:
+              - column:
+                  name: cout_moyen_unitaire
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 6
+      author: zak
+      changes:
+        - createTable:
+            tableName: commandes_lignes
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: id_produit
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: id_commande
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantite
+                  type: INT
+                  defaultValueNumeric: 1
+              - column:
+                  name: prixAchat
+                  type: DECIMAL(10,2)
+                  defaultValueNumeric: 0.00
+        - addForeignKeyConstraint:
+            baseTableName: commandes_lignes
+            baseColumnNames: id_commande
+            referencedTableName: commandes
+            referencedColumnNames: id
+            constraintName: fk_commandes_lignes_commandes
+        - addForeignKeyConstraint:
+            baseTableName: commandes_lignes
+            baseColumnNames: id_produit
+            referencedTableName: produit
+            referencedColumnNames: id
+            constraintName: fk_commandes_lignes_produit
+
+
+  - changeSet:
+      id: 5
+      author: zak
+      changes:
+        - createTable:
+            tableName: mouvements_stock
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: date_mouvement
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type_mouvement
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: quantite
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: id_ligne_commande
+                  type: INT
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: mouvements_stock
+            baseColumnNames: id_ligne_commande
+            referencedTableName: commandes_lignes
+            referencedColumnNames: id
+            constraintName: fk_mouvementsStock_ligneCommande
+
+
+  - changeSet:
+      id: 7
+      author: zak
+      changes:
+
+        # 1 - Supprimer l’ancienne table
+        - dropTable:
+            tableName: mouvements_stock
+            cascadeConstraints: true
+
+        # 2 - Recréer la table proprement
+        - createTable:
+            tableName: mouvements_stock
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: id_commande
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type_mouvement
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: quantite
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: date_mouvement
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # 3 - Ajout de la foreign key
+        - addForeignKeyConstraint:
+            baseTableName: mouvements_stock
+            baseColumnNames: id_commande
+            referencedTableName: commandes
+            referencedColumnNames: id
+            constraintName: fk_mouvementsStock_commande
+
+
