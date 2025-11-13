@@ -90,15 +90,10 @@ public class ProduitService {
     //Méthode pour le calucl de cump
     private double calculerCUMP(double ancienCUMP, int ancienStock,
                                 double nouveauPrix, int nouvelleQuantite) {
-        ancienCUMP=260.0;
-        ancienStock=100;
-        nouveauPrix=10.0;
-        nouvelleQuantite=30;
 
         if (ancienStock == 0) return nouveauPrix;
         double result=((ancienStock * ancienCUMP) + (nouvelleQuantite * nouveauPrix)) / (ancienStock + nouvelleQuantite );
 
-        System.out.println(result);
         return result;
 
 

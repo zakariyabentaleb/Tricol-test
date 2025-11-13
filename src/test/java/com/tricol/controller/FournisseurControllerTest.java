@@ -43,7 +43,7 @@ class FournisseurControllerTest {
         dto.setEmail("abc@example.com");
         dto.setTelephone("0600000000");
         dto.setVille("Casablanca");
-        dto.setICE("ICE123456");
+        dto.setICE("ICE1234562");
 
         mockMvc.perform(post("/api/fournisseurs")
                         .contentType(MediaType.APPLICATION_JSON)

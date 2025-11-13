@@ -96,6 +96,13 @@ public class MouvementStockService {
         MouvementStock saved = mouvementStockRepository.save(mouvement);
         return mouvementStockMapper.toDTO(saved);
     }
+    public int sommeMouvement(){
+        int somme=mouvementStockRepository.findAll()
+                .stream()
+                .mapToInt(MouvementStock::getQuantite)
+                .sum();
+        return somme;
+    }
 
     // DELETE
     public void delete(int id){
